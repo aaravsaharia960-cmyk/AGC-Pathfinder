@@ -3,155 +3,232 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AGC-Pathfinder | Your AI-Powered Study Companion</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
-
+<title>AGC-Pathfinder</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* --- CORE & THEME SETUP --- */
-:root {
-  --font-primary: 'Inter', sans-serif;
-  --font-retro: 'Press Start 2P', cursive;
-  --bg-primary: #0B0E1A;
-  --bg-secondary: #111827;
-  --bg-tertiary: #1E293B;
-  --text-primary: #E2E8F0;
-  --text-secondary: #94A3B8;
-  --border-color: #334155;
-  --accent-primary: #3B82F6;
-  --accent-secondary: #8B5CF6;
-  --accent-primary-rgb: 59, 130, 246;
-  --accent-secondary-rgb: 139, 92, 246;
-  --shadow-color: rgba(0,0,0,0.3);
-  --rank-override-glow: 0 0 15px #ff00ff,0 0 25px #00ffff;
-  --rank-override-text-shadow:0 0 5px #ff00ff,0 0 10px #00ffff;
-}
-body.theme-nature {
-  --bg-primary:#F0FDF4; --bg-secondary:#FFFFFF; --bg-tertiary:#F8FEFA;
-  --text-primary:#14532D; --text-secondary:#4D7C0F;
-  --border-color:#D1FAE5; --accent-primary:#22C55E; --accent-secondary:#84CC16;
-  --accent-primary-rgb:34,197,94; --accent-secondary-rgb:132,204,22;
-  --shadow-color:rgba(16,185,129,0.1); --rank-override-glow:0 0 15px #FBBF24;
-  --rank-override-text-shadow:0 0 5px #FBBF24;
-}
-body.theme-retro {
-  --bg-primary:#212121; --bg-secondary:#303030; --bg-tertiary:#282828;
-  --text-primary:#FFFFFF; --text-secondary:#BDBDBD;
-  --border-color:#424242; --accent-primary:#FFCC00; --accent-secondary:#FF5722;
-  --accent-primary-rgb:255,204,0; --accent-secondary-rgb:255,87,34;
-  --shadow-color:rgba(0,0,0,0.5); --rank-override-glow:0 0 10px #FFFF00;
-  --rank-override-text-shadow:0 0 3px #FFFF00,0 0 5px #FFFF00;
-}
-/* BASE STYLES */
-* {box-sizing:border-box;margin:0;padding:0;}
-html {scroll-behavior:smooth;}
-body {font-family:var(--font-primary);background-color:var(--bg-primary);color:var(--text-primary);overflow-x:hidden;transition:background-color 0.3s ease,color 0.3s ease;}
-#background-effects {position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;overflow:hidden;}
-.stars {position:absolute;width:100%;height:100%;background:transparent;display:none;}
-body.theme-galaxy .stars {display:block;}
-.star {position:absolute;background:white;border-radius:50%;animation:twinkle 5s infinite ease-in-out;}
-@keyframes twinkle {50%{opacity:0.5;transform:scale(0.8);}}
-.scanlines {display:none;}
-body.theme-retro .scanlines {display:block;position:absolute;width:100%;height:100%;background:repeating-linear-gradient(0deg, rgba(0,0,0,0.3), rgba(0,0,0,0.3) 1px, transparent 1px, transparent 3px);pointer-events:none;}
-
-/* LAYOUT & NAVIGATION */
-.page-container {padding:30px clamp(15px,4vw,40px) 120px;max-width:1600px;margin:0 auto;}
-.page {display:none;animation:fadeIn 0.5s ease-out;}
-.page.active {display:block;}
-@keyframes fadeIn {from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-.main-nav {position:fixed;bottom:20px;left:50%;transform:translateX(-50%);width:calc(100%-40px);max-width:500px;background:var(--bg-secondary);display:flex;justify-content:space-around;padding:10px 0;border:1px solid var(--border-color);border-radius:50px;z-index:1000;box-shadow:0 10px 30px var(--shadow-color);}
-body.theme-retro .main-nav {border-radius:0;border:4px solid var(--border-color);}
-.nav-link {display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-secondary);text-decoration:none;font-size:0.7rem;font-weight:500;transition:all 0.2s ease-in-out;width:65px;height:50px;border-radius:15px;cursor:pointer;}
-body.theme-retro .nav-link {font-size:8px;font-family:var(--font-retro);}
-.nav-link svg {margin-bottom:4px;}
-.nav-link.active {color:var(--accent-primary);}
-
-/* HEADER & DASHBOARD */
-.page-header {text-align:center;margin-bottom:50px;}
-.page-header h1 {font-size:clamp(2rem,5vw,2.8rem);font-weight:700;letter-spacing:-1.5px;color:var(--text-primary);}
-.page-header p {color:var(--text-secondary);max-width:600px;margin:8px auto 0;font-size:clamp(1rem,2.5vw,1.1rem);}
-body.theme-retro .page-header h1, body.theme-retro .page-header p {font-family:var(--font-retro);letter-spacing:0;}
-.dashboard-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;}
-.dashboard-card {background:var(--bg-secondary);padding:25px;border-radius:16px;border:1px solid var(--border-color);text-align:center;box-shadow:0 4px 15px var(--shadow-color);}
-.dashboard-card h3 {font-size:1rem;color:var(--text-secondary);margin-bottom:10px;font-weight:500;}
-.dashboard-card .value {font-size:2.2rem;font-weight:700;color:var(--text-primary);}
-.dashboard-card .rank-value {font-size:1.8rem;}
-body.theme-retro .dashboard-card {border-radius:0;border:4px solid var(--border-color);box-shadow:4px 4px 0 var(--border-color);}
-
-/* KANBAN BOARD */
-.kanban-board {display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:20px;}
-.kanban-column {background:var(--bg-tertiary);border-radius:12px;padding:15px;border:1px solid var(--border-color);}
-.kanban-column-header {display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;}
-.kanban-column-header h2 {font-size:1.1rem;color:var(--text-primary);}
-.kanban-column-header .count {background:var(--bg-primary);padding:4px 8px;border-radius:6px;font-size:0.8rem;font-weight:600;}
-.chapter-list {list-style:none;display:flex;flex-direction:column;gap:10px;min-height:200px;}
-.chapter-card {background:var(--bg-secondary);padding:15px;border-radius:10px;border:1px solid var(--border-color);box-shadow:0 2px 5px var(--shadow-color);display:flex;align-items:center;justify-content:space-between;}
-.chapter-card-info {flex-grow:1;}
-.chapter-card-info .name {font-weight:600;}
-.chapter-card-info .sub {font-size:0.8rem;color:var(--text-secondary);margin-top:2px;}
-.chapter-actions button {background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:5px;border-radius:50%;transition:all 0.2s ease;}
-.chapter-actions button:hover {background:var(--bg-primary);color:var(--accent-primary);}
-body.theme-retro .kanban-column, body.theme-retro .chapter-card {border-radius:0;border:4px solid var(--border-color);}
-.kanban-subject-group {margin-bottom:20px;}
-.kanban-subject-header {font-size:0.9rem;font-weight:600;color:var(--text-secondary);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--border-color);}
-
-/* MODALS */
-.modal-overlay {position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:2000;opacity:0;visibility:hidden;transition:opacity 0.3s ease,visibility 0.3s ease;}
-.modal-overlay.show {opacity:1;visibility:visible;}
-.modal-content {background:var(--bg-secondary);padding:30px;border-radius:15px;text-align:center;max-width:90%;width:500px;border:1px solid var(--border-color);transform:scale(0.95);transition:all 0.4s cubic-bezier(0.19,1,0.22,1);box-shadow:0 10px 40px var(--shadow-color);}
-body.theme-retro .modal-content {border:4px solid var(--border-color);border-radius:0;font-family:var(--font-primary);}
-.modal-overlay.show .modal-content {transform:scale(1);}
-.modal-header {display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
-.modal-header h2 {font-size:1.5rem;}
-.close-modal-btn {background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-secondary);}
-
-/* AI Bench */
-#ai-modal .modal-content {width:90%;max-width:800px;height:85vh;display:flex;flex-direction:column;padding:0;}
-.ai-modal-header {padding:20px;border-bottom:1px solid var(--border-color);}
-.ai-bench {display:flex;justify-content:center;gap:10px;padding:20px;border-bottom:1px solid var(--border-color);}
-.ai-bench-btn {padding:10px 20px;border:2px solid var(--border-color);border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.2s ease;background:transparent;color:var(--text-secondary);}
-.ai-bench-btn.active {background:var(--accent-primary);color:#fff;border-color:var(--accent-primary);}
-body.theme-retro .ai-bench-btn {border-width:4px;}
-#chat-container {flex-grow:1;display:flex;flex-direction:column;overflow:hidden;}
-#chat-messages {flex-grow:1;overflow-y:auto;padding:20px;}
-.chat-message {max-width:80%;padding:12px 18px;border-radius:18px;line-height:1.6;margin-bottom:10px;animation:fadeIn 0.3s ease;white-space:pre-wrap;}
-.user-message {background:var(--accent-primary);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
-.ai-message {background:var(--bg-tertiary);align-self:flex-start;border-bottom-left-radius:4px;}
-.ai-message.loading {display:flex;align-items:center;gap:10px;}
-.typing-indicator span {display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--text-secondary);animation:bounce 1s infinite;}
-.typing-indicator span:nth-child(2){animation-delay:0.2s;}
-.typing-indicator span:nth-child(3){animation-delay:0.4s;}
-@keyframes bounce {50%{transform:translateY(-4px);}}
-#chat-form {display:flex;padding:20px;border-top:1px solid var(--border-color);}
-#chat-input {flex:1;padding:12px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-primary);color:var(--text-primary);}
-#chat-form button {margin-left:10px;padding:10px 20px;background-color:var(--accent-primary);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;}
-
-/* Achievements */
-#achievements-list {display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;}
-.achievement-card {background:var(--bg-tertiary);padding:15px;border-radius:10px;border:1px solid var(--border-color);opacity:0.4;transition:opacity 0.3s ease;}
-.achievement-card.unlocked {opacity:1;border-left:4px solid var(--accent-secondary);}
-.achievement-card .title {font-weight:600;}
-.achievement-card .desc {font-size:0.8rem;color:var(--text-secondary);margin-top:4px;}
-.heatmap-container {display:grid;grid-template-columns:repeat(13,1fr);gap:4px;}
-.heatmap-day {aspect-ratio:1/1;background-color:var(--border-color);border-radius:3px;}
+    body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #eef2f7;
+        color: #333;
+    }
+    header {
+        background: linear-gradient(135deg, #4b6cb7, #182848);
+        color: white;
+        text-align: center;
+        padding: 4rem 1rem 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    header h1 {
+        margin: 0;
+        font-size: 3rem;
+    }
+    header p {
+        margin: 0.5rem 0 1rem;
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+    nav {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    nav a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: 0.3s;
+    }
+    nav a:hover {
+        background: rgba(255,255,255,0.2);
+    }
+    main {
+        padding: 2rem 1rem;
+        max-width: 1100px;
+        margin: auto;
+    }
+    section {
+        margin-bottom: 3rem;
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+    }
+    h2 {
+        color: #4b6cb7;
+        margin-top: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    h2::before {
+        content: "🔹";
+        font-size: 1.2rem;
+    }
+    ul {
+        padding-left: 1.5rem;
+    }
+    ul li {
+        margin-bottom: 0.7rem;
+    }
+    input[type="text"] {
+        padding: 0.7rem;
+        width: 70%;
+        max-width: 400px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        margin-right: 0.5rem;
+        transition: 0.3s;
+    }
+    input[type="text"]:focus {
+        outline: none;
+        border-color: #4b6cb7;
+        box-shadow: 0 0 5px rgba(75,108,183,0.5);
+    }
+    button {
+        background: #4b6cb7;
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: 0.3s;
+    }
+    button:hover {
+        background: #3a54a1;
+        transform: translateY(-2px);
+    }
+    img {
+        max-width: 100%;
+        border-radius: 12px;
+        margin-top: 1rem;
+        border: 1px solid #ddd;
+    }
+    footer {
+        text-align: center;
+        padding: 2rem;
+        background: #182848;
+        color: white;
+        font-size: 0.9rem;
+        margin-top: 2rem;
+    }
+    a {
+        color: #4b6cb7;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    @media(max-width: 768px){
+        nav a {
+            padding: 0.5rem;
+        }
+        input[type="text"] {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        button {
+            width: 100%;
+        }
+    }
 </style>
 </head>
-<body class="theme-galaxy">
+<body>
+<header>
+    <h1>AGC-Pathfinder</h1>
+    <p>AI-powered study companion by Aarav, Gemini, Nand & ChatGPT</p>
+    <nav>
+        <a href="#about">About</a>
+        <a href="#features">Features</a>
+        <a href="#ai-helper">AI Helper 1</a>
+        <a href="#ai-demo">AI Helper 2</a>
+        <a href="#contact">Contact</a>
+    </nav>
+</header>
 
-<div id="background-effects">
-  <div class="stars"></div>
-  <div class="scanlines"></div>
-</div>
+<main>
+<section id="about">
+    <h2>About</h2>
+    <p>AGC-Pathfinder helps you learn smarter with interactive AI-powered tools, quizzes, and study tips, making your learning journey efficient and fun.</p>
+    <img src="https://via.placeholder.com/900x300?text=AGC-Pathfinder+Overview" alt="Overview Image">
+</section>
 
-<div id="app">
-  <main class="page-container" id="main-container"></main>
-  <nav class="main-nav" id="main-nav"></nav>
-</div>
+<section id="features">
+    <h2>Features</h2>
+    <ul>
+        <li>Interactive learning modules for multiple subjects</li>
+        <li>AI-driven study suggestions and quizzes</li>
+        <li>Track your progress with analytics</li>
+        <li>Modern, colorful, and responsive interface</li>
+        <li>Quick practice for exams and assignments</li>
+    </ul>
+    <img src="https://via.placeholder.com/900x300?text=Features+Preview" alt="Features Image">
+</section>
 
-<!-- MODALS -->
-<div id="settings-modal" class="modal-overlay"></div>
-<div id="ai-modal" class="modal-overlay"></div>
+<section id="ai-helper">
+    <h2>AI Study Helper</h2>
+    <p>Ask a question and get instant study suggestions:</p>
+    <input type="text" id="ai-question" placeholder="Type your question...">
+    <button onclick="getAISuggestion()">Get Suggestion</button>
+    <p id="ai-answer" style="margin-top:1rem; font-weight:bold; color:#182848;"></p>
+</section>
+
+<section id="ai-demo">
+    <h2>AI Quiz Generator</h2>
+    <p>Generate a quick quiz question for a topic:</p>
+    <input type="text" id="quiz-topic" placeholder="Enter topic...">
+    <button onclick="generateQuiz()">Generate Quiz</button>
+    <p id="quiz-answer" style="margin-top:1rem; font-weight:bold; color:#182848;"></p>
+</section>
+
+<section id="contact">
+    <h2>Contact</h2>
+    <p>Questions or collaborations? Reach out via <a href="mailto:example@example.com">email</a> or <a href="https://www.linkedin.com" target="_blank">LinkedIn</a>.</p>
+    <img src="https://via.placeholder.com/900x200?text=Contact+Us" alt="Contact Image">
+</section>
+</main>
+
+<footer>
+    &copy; 2025 AGC-Pathfinder. Made with ❤️ by Aarav, Gemini, Nand & ChatGPT.
+</footer>
 
 <script>
-// --- CONSTANTS
+function getAISuggestion() {
+    const input = document.getElementById('ai-question').value.toLowerCase();
+    let answer = "Focus on your textbooks and notes for this topic.";
+    if(input.includes("math")) answer = "Practice problem sets step-by-step!";
+    else if(input.includes("science")) answer = "Use diagrams and experiments to understand concepts.";
+    else if(input.includes("history")) answer = "Focus on timelines and key events.";
+    else if(input.includes("english")) answer = "Read summaries and practice comprehension exercises.";
+    else if(input.includes("ai") || input.includes("chatgpt")) answer = "Explore AI topics with mini coding projects or simulations.";
+    document.getElementById('ai-answer').innerText = answer;
+}
+
+function generateQuiz() {
+    const topic = document.getElementById('quiz-topic').value.toLowerCase();
+    let quiz = "Think of a question related to " + topic + ".";
+    if(topic.includes("math")) quiz = "Solve: What is 12 × 8?";
+    else if(topic.includes("science")) quiz = "Question: What is the process of photosynthesis?";
+    else if(topic.includes("history")) quiz = "Question: Who was the first president of the United States?";
+    else if(topic.includes("english")) quiz = "Question: Identify the noun in the sentence 'The cat sleeps on the mat.'";
+    else if(topic.includes("ai")) quiz = "Question: What does 'AI' stand for, and give one real-life application?";
+    document.getElementById('quiz-answer').innerText = quiz;
+}
+</script>
+</body>
+</html>
